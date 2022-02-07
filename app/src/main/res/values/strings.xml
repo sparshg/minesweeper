@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Minesweeper</string>
     <string name="bomb">💣</string>
+    <string name="gameTitle">MineSweeper</string>
 </resources>
