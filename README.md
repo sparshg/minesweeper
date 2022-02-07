@@ -2,4 +2,4 @@
 
 My 1 day challenge :)
 
-![](demo.png)
+<img src="demo.png" width="25%" height="25%">
