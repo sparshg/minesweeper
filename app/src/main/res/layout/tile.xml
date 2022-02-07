@@ -11,6 +11,7 @@
         android:layout_height="72dp"
         android:gravity="center"
         android:text="@string/bomb"
+        android:textColor="#323232"
         android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="@+id/tileAnim"
         app:layout_constraintEnd_toEndOf="@+id/tileAnim" />
