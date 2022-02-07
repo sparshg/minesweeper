@@ -1,6 +1,8 @@
 package com.example.minesweeper
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +19,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var vib: Vibrator
     private val buttons = Array(4) { arrayOfNulls<LottieAnimationView>(4) }
     private val texts = Array(4) { arrayOfNulls<TextView>(4) }
+    private val timer = Handler(Looper.getMainLooper())
+    private var score = 0
+    private var high = 0
 
     private var board = arrayOf(
         arrayOf(0, 0, 0, 0),
@@ -31,8 +36,30 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         vib = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        binding.github.setOnClickListener{
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sparshg/minesweeper")))
+        }
         randomizeBoard()
         setTiles()
+        startTimer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val sh = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+        high = sh.getInt("high", 10000)
+        if (high != 10000) {
+            binding.highscore.text = high.toString()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+        val myEdit = sharedPreferences.edit()
+        myEdit.putInt("high", high)
+        myEdit.apply()
     }
 
     private fun randomizeBoard() {
@@ -93,11 +120,20 @@ class MainActivity : AppCompatActivity() {
                 button.setOnClickListener {
                     if (button.tag == 0) {
                         buttons[i][j]?.speed = 1f
+                        detectRipple(i, j, i, j)
                         button.playAnimation()
                     }
                     button.tag = 1
                     if (board[i][j] == -1) {
                         vibrate()
+                        stopTimer()
+                        reset()
+                    } else if (detectWin()) {
+                        stopTimer()
+                        if (score < high) {
+                            high = score
+                            binding.highscore.text = high.toString()
+                        }
                         reset()
                     }
                 }
@@ -107,7 +143,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun detectWin(): Boolean {
+        for (i in 0..3) {
+            for (j in 0..3) {
+                if (board[i][j] != -1 && buttons[i][j]?.tag == 0) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun detectRipple(originR: Int, originC: Int, r: Int, c: Int) {
+        if (board[r][c] == 0) {
+            buttons[r][c]?.speed = 1f
+            buttons[r][c]?.playAnimation()
+            buttons[r][c]?.tag = 1
+            if (r != 3 && r >= originR) {
+                detectRipple(originR, originC, r + 1, c)
+            }
+            if (r != 0 && r <= originR) {
+                detectRipple(originR, originC, r - 1, c)
+            }
+            if (c != 3 && c >= originC) {
+                detectRipple(originR, originC, r, c + 1)
+            }
+            if (c != 0 && c <= originC) {
+                detectRipple(originR, originC, r, c - 1)
+            }
+        }
+
+    }
+
+
     private fun reset() {
+        score = 0
         for (i in 0..3) {
             for (j in 0..3) {
                 if (buttons[i][j]?.tag == 1) {
@@ -139,7 +209,29 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+            startTimer()
         }, 500)
+    }
+
+    private fun startTimer() {
+        if (score == 0) {
+            timer.removeCallbacks(updateScore)
+            timer.postDelayed(updateScore, 1000)
+        }
+    }
+
+    private fun stopTimer() {
+        timer.removeCallbacks(updateScore)
+    }
+
+    private val updateScore: Runnable = object : Runnable {
+        override fun run() {
+            val currentMilliseconds = System.currentTimeMillis()
+            score++
+            binding.score.text = score.toString()
+            timer.postAtTime(this, currentMilliseconds)
+            timer.postDelayed(this, 1000)
+        }
     }
 
     private fun vibrate() {
