@@ -7,7 +7,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.example.tictactoe"
+        applicationId "com.example.minesweeper"
         minSdk 19
         targetSdk 31
         versionCode 1

@@ -1,4 +1,4 @@
-package com.example.tictactoe
+package com.example.minesweeper
 
 import org.junit.Test
 

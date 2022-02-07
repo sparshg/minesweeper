@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">TicTacToe</string>
+    <string name="app_name">Minesweeper</string>
     <string name="bomb">💣</string>
 </resources>
