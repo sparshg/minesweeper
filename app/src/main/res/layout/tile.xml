@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="2dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:padding="2dp">
 
     <TextView
         android:id="@+id/tileText"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:background="@drawable/ic_back"
+        android:backgroundTint="?attr/colorSecondaryVariant"
         android:gravity="center"
         android:text="@string/bomb"
-        android:textColor="#323232"
+        android:textColor="?attr/colorOnPrimary"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/tileAnim"
         app:layout_constraintEnd_toEndOf="@+id/tileAnim" />
@@ -23,7 +24,6 @@
         android:layout_height="48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:lottie_autoPlay="false"
-        app:lottie_rawRes="@raw/test" />
+        app:lottie_rawRes="@raw/dark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

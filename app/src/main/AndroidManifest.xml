@@ -12,7 +12,8 @@
         android:theme="@style/Theme.Minesweeper">
         <activity
             android:name="com.example.minesweeper.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="uiMode">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

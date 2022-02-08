@@ -2,6 +2,7 @@ package com.example.minesweeper
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.*
 import android.util.Log
@@ -119,13 +120,18 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 button.tag = 0
+                if (isDarkModeOn()) {
+                    button.setAnimation(R.raw.dark)
+                } else {
+                    button.setAnimation(R.raw.light)
+                }
                 button.setOnClickListener {
                     if (button.tag == 0) {
                         buttons[i][j]?.speed = 1f
                         detectRipple(i, j, i, j)
+                        button.tag = 1
                         button.playAnimation()
                     }
-                    button.tag = 1
                     if (board[i][j] == -1) {
                         vibrate()
                         stopTimer()
@@ -156,18 +162,19 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+
     private fun detectRipple(originR: Int, originC: Int, r: Int, c: Int) {
+        buttons[r][c]?.tag = 1
+        buttons[r][c]?.speed = 1f
+        buttons[r][c]?.playAnimation()
         if (board[r][c] == 0) {
-            buttons[r][c]?.tag = 1
-            buttons[r][c]?.speed = 1f
-            buttons[r][c]?.playAnimation()
-            if (r != rows-1 && r >= originR) {
+            if (r != rows - 1 && r >= originR) {
                 detectRipple(originR, originC, r + 1, c)
             }
             if (r != 0 && r <= originR) {
                 detectRipple(originR, originC, r - 1, c)
             }
-            if (c != cols-1 && c >= originC) {
+            if (c != cols - 1 && c >= originC) {
                 detectRipple(originR, originC, r, c + 1)
             }
             if (c != 0 && c <= originC) {
@@ -237,5 +244,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             vib.vibrate(100);
         }
+    }
+
+    private fun isDarkModeOn(): Boolean {
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES
     }
 }
