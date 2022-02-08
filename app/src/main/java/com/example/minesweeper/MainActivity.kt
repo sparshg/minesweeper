@@ -17,18 +17,15 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
     lateinit var vib: Vibrator
-    private val buttons = Array(4) { arrayOfNulls<LottieAnimationView>(4) }
-    private val texts = Array(4) { arrayOfNulls<TextView>(4) }
     private val timer = Handler(Looper.getMainLooper())
     private var score = 0
     private var high = 0
+    private val rows = 8
+    private val cols = 7
+    private val buttons = Array(rows) { arrayOfNulls<LottieAnimationView>(cols) }
+    private val texts = Array(rows) { arrayOfNulls<TextView>(rows) }
 
-    private var board = arrayOf(
-        arrayOf(0, 0, 0, 0),
-        arrayOf(0, 0, 0, 0),
-        arrayOf(0, 0, 0, 0),
-        arrayOf(0, 0, 0, 0)
-    )
+    private var board = Array(rows) { IntArray(cols) }
     private var bombs = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +33,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         vib = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        binding.github.setOnClickListener{
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sparshg/minesweeper")))
+        binding.github.setOnClickListener {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/sparshg/minesweeper")
+                )
+            )
         }
         randomizeBoard()
         setTiles()
@@ -63,10 +65,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun randomizeBoard() {
-        for (i in 0..3) {
-            for (j in 0..3) {
-                if (bombs < 10) {
-                    if ((0..3).random() == 1) {
+        for (i in 0 until rows) {
+            for (j in 0 until cols) {
+                if (bombs < 9) {
+                    if ((0..9).random() == 1) {
                         bombs++
                         for (u in -1..1) {
                             for (v in -1..1) {
@@ -95,13 +97,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTiles() {
-        for (i in 0..3) {
+        for (i in 0 until rows) {
             val row = TableRow(this)
             row.layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT
             )
-            for (j in 0..3) {
+            for (j in 0 until cols) {
                 val tile = LayoutInflater.from(this).inflate(R.layout.tile, null)
                 val button = tile.findViewById<LottieAnimationView>(R.id.tileAnim)
                 val text = tile.findViewById<TextView>(R.id.tileText)
@@ -144,8 +146,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun detectWin(): Boolean {
-        for (i in 0..3) {
-            for (j in 0..3) {
+        for (i in 0 until rows) {
+            for (j in 0 until cols) {
                 if (board[i][j] != -1 && buttons[i][j]?.tag == 0) {
                     return false
                 }
@@ -156,16 +158,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun detectRipple(originR: Int, originC: Int, r: Int, c: Int) {
         if (board[r][c] == 0) {
+            buttons[r][c]?.tag = 1
             buttons[r][c]?.speed = 1f
             buttons[r][c]?.playAnimation()
-            buttons[r][c]?.tag = 1
-            if (r != 3 && r >= originR) {
+            if (r != rows-1 && r >= originR) {
                 detectRipple(originR, originC, r + 1, c)
             }
             if (r != 0 && r <= originR) {
                 detectRipple(originR, originC, r - 1, c)
             }
-            if (c != 3 && c >= originC) {
+            if (c != cols-1 && c >= originC) {
                 detectRipple(originR, originC, r, c + 1)
             }
             if (c != 0 && c <= originC) {
@@ -178,8 +180,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun reset() {
         score = 0
-        for (i in 0..3) {
-            for (j in 0..3) {
+        for (i in 0 until rows) {
+            for (j in 0 until cols) {
                 if (buttons[i][j]?.tag == 1) {
                     buttons[i][j]?.tag = 0
                     buttons[i][j]?.speed = -1f
@@ -188,16 +190,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         Handler(Looper.getMainLooper()).postDelayed({
-            board = arrayOf(
-                arrayOf(0, 0, 0, 0),
-                arrayOf(0, 0, 0, 0),
-                arrayOf(0, 0, 0, 0),
-                arrayOf(0, 0, 0, 0)
-            )
+            board = Array(rows) { IntArray(cols) }
             bombs = 0
             randomizeBoard()
-            for (i in 0..3) {
-                for (j in 0..3) {
+            for (i in 0 until rows) {
+                for (j in 0 until cols) {
                     if (board[i][j] != -1) {
                         if (board[i][j] == 0) {
                             texts[i][j]?.text = ""

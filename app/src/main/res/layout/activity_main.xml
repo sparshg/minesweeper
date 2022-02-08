@@ -11,7 +11,7 @@
         android:id="@+id/gameTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="48dp"
         android:fontFamily="sans-serif-smallcaps"
         android:text="@string/gameTitle"
         android:textSize="48sp"
